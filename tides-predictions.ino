@@ -19,11 +19,6 @@ long lastPrintTime = 0;
 enum EventState {EVENT1, EVENT2, AMBIENT, RESET, WAITING};
 EventState nState = RESET;
 
-struct UserData {
-  char name[32];
-  char company[32];
-};
-
 
 void setup() {
   Serial.begin(9600);
@@ -81,8 +76,25 @@ void setup() {
   Serial.println("DATA");
   Serial.println(data);
 
-
-
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(data);
+  //
+  if (!root.success()) {
+    Serial.println("parseObject() failed");
+    return;
+  }
+  //
+  //
+  for (int i = 0; i < root["predictions"].size(); i++) {
+    const char* t = root["predictions"][i]["t"];
+    const char* v = root["predictions"][i]["v"];
+    const char* type = root["predictions"][i]["type"];
+    Serial.print("ITEM: ");
+    Serial.println(i);
+    Serial.println(t); // time
+    Serial.println(v); // amplitude
+    Serial.println(type); // type 
+  }
 }
 
 
